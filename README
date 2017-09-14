@@ -65,3 +65,6 @@ are using CVODE/CVODES)
 I also have not incorporated the 'p' variable which sets the dendrite/soma
 area ratio.  It is called pp and set to 0.5 but not incorporated in the geometry
 setting routines.
+
+20170914 A vecst.mod from Ruth Betterton derived from Wang Buzaki's
+vecst.mod makes model work under mswin.
