@@ -301,9 +301,9 @@ static double mrow(void* vv) {
   i = (int)*getarg(2);
   cols = (int)*getarg(3); rows=ny/cols;
   if (cols!=nx) { 
-    nx=vector_buffer_size(vv);
+    nx=vector_buffer_size((IvocVect*)vv);
     if (cols<=nx) {
-      vector_resize(vv, cols); nx=cols; 
+      vector_resize((IvocVect*)vv, cols); nx=cols; 
     } else {
       printf("%d > %d :: \n",cols,nx);
       hoc_execerror("Vector max capacity too small in mrow", 0);
@@ -325,9 +325,9 @@ static double mcol(void* vv) {
   j = (int)*getarg(2);
   cols = (int)*getarg(3); rows=ny/cols;
   if (rows!=nx) { 
-    nx=vector_buffer_size(vv);
+    nx=vector_buffer_size((IvocVect*)vv);
     if (rows<=nx) {
-      vector_resize(vv, rows); nx=rows; 
+      vector_resize((IvocVect*)vv, rows); nx=rows; 
     } else {
       printf("%d > %d :: ",rows,nx);
       hoc_execerror("Vector max capacity too small in mcol ", 0);

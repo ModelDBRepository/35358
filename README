@@ -116,3 +116,8 @@ setting routines.
 vecst.mod makes model work under mswin.
 
 20210222 Instructions for running with CoreNEURON from Pramod Kumbhar.
+
+
+## Revsions
+
+2022-05-16 updates to MOD files for NEURON 9.0 compatibility
