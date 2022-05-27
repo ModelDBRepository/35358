@@ -57,6 +57,8 @@ VERBATIM
 // obsolete #include <values.h> /* contains MAXLONG */
 #include <limits.h> /* LONG_MAX replaces MAXLONG */
 #include <time.h> 
+
+#ifndef NRN_VERSION_GTEQ_8_2_0
 extern double* hoc_pgetarg();
 extern double hoc_call_func(Symbol*, int narg);
 extern FILE* hoc_obj_file_arg(int narg);
@@ -64,6 +66,7 @@ extern void vector_resize();
 extern int vector_instance_px();
 extern void* vector_arg();
 extern double hoc_epsilon;
+#endif
 
 /* Below added by RTB 170913. Exerpt taken from changes made by Michael Hines
  to Buzsaki Wang 1996, modelDB Accession:26997 */
@@ -72,17 +75,17 @@ extern double hoc_epsilon;
 #include <limits.h>
 #define MAXLONG LONG_MAX
 #endif
+
 /* some machines do not have drand48 and srand48 so use the implementation
 at the end of this file */
-extern double my_drand48();
-extern void my_srand48();
+double my_drand48();
+void my_srand48(long seedval);
 #undef drand48
 #undef srand48
 #define drand48 my_drand48
 #define srand48 my_srand48
 
-extern double drand48();
-// end of exerpt
+// end of excerpt
 
 ENDVERBATIM
  
@@ -331,7 +334,7 @@ static double fewind(void* vv) {
         for (j=0;j<num;j++) {
           for (i=0;i<ni;i++) x[i]=vvo[j][scr[i]];    
           for (i=0;i<ni;i++) vvo[j][i]=x[i];   
-          vv=vector_arg(j+2); vector_resize(vv, ni);
+          vv=vector_arg(j+2); vector_resize((IvocVect*)vv, ni);
         }
 	return ni;
 }
@@ -343,7 +346,7 @@ VERBATIM
 static double iwr(void* vv) {
   int i, j, nx;
   double *x;
-  FILE* f, *hoc_obj_file_arg();
+  FILE* f;
   f = hoc_obj_file_arg(1);
   nx = vector_instance_px(vv, &x);
   if (nx>scrsz) { 
@@ -364,7 +367,7 @@ VERBATIM
 static double ird(void* vv) {
   int i, j, nx, n;
   double *x;
-  FILE* f, *hoc_obj_file_arg();
+  FILE* f;
   f = hoc_obj_file_arg(1);
   nx = vector_instance_px(vv, &x);
   fread(&n,sizeof(int),1,f);  // size
@@ -374,9 +377,9 @@ static double ird(void* vv) {
     scr=(int *)ecalloc(scrsz, sizeof(int));
   }
   if (n!=nx) { 
-    nx=vector_buffer_size(vv);
+    nx=vector_buffer_size((IvocVect*)vv);
     if (n<=nx) {
-      vector_resize(vv, n); nx=n; 
+      vector_resize((IvocVect*)vv, n); nx=n;
     } else {
       printf("%d > %d :: ",n,nx);
       hoc_execerror("Vector max capacity too small for ird ", 0);
@@ -395,8 +398,8 @@ static double insct(void* vv) {
 	int i, j, k, nx, nv1, nv2, maxsz;
 	double *x, *v1, *v2;
 	nx = vector_instance_px(vv, &x);
-        maxsz=vector_buffer_size(vv);
-        vector_resize(vv, maxsz);
+        maxsz=vector_buffer_size((IvocVect*)vv);
+        vector_resize((IvocVect*)vv, maxsz);
 	nv1 = vector_arg_px(1, &v1);
 	nv2 = vector_arg_px(2, &v2);
         for (i=0,k=0;i<nv1&&k<maxsz;i++) for (j=0;j<nv2&&k<maxsz;j++) if (v1[i]==v2[j]) {
@@ -404,7 +407,7 @@ static double insct(void* vv) {
         if (k==maxsz) { 
           printf("\tinsct WARNING: ran out of room: %d\n",k);
           for (;i<nv1;i++,j=0) for (;j<nv2;j++) if (v1[i]==v2[j]) k++;
-        } else { vector_resize(vv, k); }
+        } else { vector_resize((IvocVect*)vv, k); }
 	return (double)k;
 }
 ENDVERBATIM
@@ -426,6 +429,7 @@ static double cvlv(void* vv) {
       if (k>0 && k<nsrc-1) x[i]+=filt[j]*src[k];
     }
   }
+  return 0.;
 }
 ENDVERBATIM
 
@@ -445,6 +449,7 @@ static double intrp(void* vv) {
     for (i=la+1; i<lb; i++) x[i]= a + (b-a)/(lb-la)*(i-la);
     a=b; la=lb;
   }
+  return 0.;
 }
 ENDVERBATIM
 
@@ -484,7 +489,7 @@ static double nind(void* vv) {
           }
           for (k=last+1;k<nx;k++,m++) { x[m]=vvo[j][k]; }
           for (i=0;i<c;i++) vvo[j][i]=x[i];   
-          vv=vector_arg(j+2); vector_resize(vv, c);
+          vv=vector_arg(j+2); vector_resize((IvocVect*)vv, c);
         }
 	return c;
 }
@@ -497,7 +502,7 @@ static double keyind(void* vv) {
   int i, j, k, ni, nk, nv[10], num;
   double *ind, *key, *vvo[10];
   ni = vector_instance_px(vv, &ind); // vv is ind
-  for (i=0;ifarg(i);i++); i--; // drop back by one to get numarg()
+  for (i=0;ifarg(i);i++) {} i--; // drop back by one to get numarg()
   if (i>10) hoc_execerror("ERR: keyind can only handle 9 vectors", 0);
   num = i-1; /* number of vectors to be picked apart */
   for (i=0;i<num;i++) { 
@@ -519,7 +524,7 @@ static double keyind(void* vv) {
     }
     if (i==nk) ind[k++]=j; // all equal
   }
-  vector_resize(vv, k);
+  vector_resize((IvocVect*)vv, k);
   return k;
 }
 ENDVERBATIM
@@ -675,6 +680,7 @@ static double bpeval(void* vv) {
   } else {
     for (i=0;i<n;i++) vo[i]=outp[i]*(1.-1.*outp[i])*del[i];
   }
+  return 0.;
 }
 ENDVERBATIM
  
@@ -748,8 +754,8 @@ static double xing(void* vv) {
   nsrc = vector_arg_px(1, &src); th=0;
   ntvec = vector_arg_px(2, &tvec); th=0;
   th = *getarg(3);
-  maxsz=vector_buffer_size(vv);
-  vector_resize(vv, maxsz);
+  maxsz=vector_buffer_size((IvocVect*)vv);
+  vector_resize((IvocVect*)vv, maxsz);
   if (nsrc!=ntvec) hoc_execerror("v.xing: vectors not all same size", 0);
   for (i=0,f=0,j=0; i<nsrc; i++) {
     if (src[i]>th) { /* ? passing thresh */
@@ -767,7 +773,7 @@ static double xing(void* vv) {
       if (f==1) { f=0; } /* just passed going down */
     }
   }
-  vector_resize(vv, j);
+  vector_resize((IvocVect*)vv, j);
   return (double)i;
 }
 ENDVERBATIM
@@ -960,9 +966,9 @@ static double smgs(void* vv) {
 
   points = (int)((high-low)/step+hoc_epsilon);
   if (nsum!=points) { 
-    maxsz=vector_buffer_size(vv);
+    maxsz=vector_buffer_size((IvocVect*)vv);
     if (points<=maxsz) {
-      vector_resize(vv, nsum); nsum=points; 
+      vector_resize((IvocVect*)vv, nsum); nsum=points;
     } else {
       printf("%d > %d :: ",points,maxsz);
       hoc_execerror("Vector max capacity too small in smgs ", 0);
@@ -1107,9 +1113,7 @@ next()
 	x[0] = LOW(p[0]);
 }
 
-void
-my_srand48(seedval)
-long seedval;
+void my_srand48(long seedval)
 {
 	SEED(X0, LOW(seedval), HIGH(seedval));
 }

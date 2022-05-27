@@ -112,7 +112,12 @@ I also have not incorporated the 'p' variable which sets the dendrite/soma
 area ratio.  It is called pp and set to 0.5 but not incorporated in the geometry
 setting routines.
 
+## Changelog
+
 20170914 A vecst.mod from Ruth Betterton derived from Wang Buzaki's
-vecst.mod makes model work under mswin.
+         vecst.mod makes model work under mswin.
 
 20210222 Instructions for running with CoreNEURON from Pramod Kumbhar.
+
+20220516 Updated MOD files to contain valid C++ and be compatible with the
+         upcoming versions 8.2 and 9.0 of NEURON.
