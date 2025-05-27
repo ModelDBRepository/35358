@@ -1,5 +1,3 @@
-% $Id: README,v 1.5 2004/02/10 15:51:41 billl Exp $
-
 ## Running with NEURON or CoreNEURON
 
 * Make sure NEURON installation is in $PATH and $PYTHONPATH
@@ -56,34 +54,34 @@ To run under mswin:
   run mknrndll and find the directory b04feb12 that came from the zip file and make
   the nrnmech.dll file
   start the simulation by double clicking on mosinit.hoc
-  
+
 This is a pretty good replica of simulations shown in Fig. 2A (jcomputnsci1:39F2A.gif)
 and Fig. 3 (jcomputnsci1:39F3.gif) of:
   author = 	"Pinsky, P and Rinzel, J",
   title = 	"Intrinsic and Network Rhythomogenesis in a Reduced
 		  Traub Model for CA3 Neurons",
-  journal = 	"J Computational Neuroscience",
+  journal = 	*J Computational Neuroscience*,
   year = 	"1994",
   volume = 	"1",
   pages = 	"39-60",
 
-The simulation provided will create 3 graphs: 
+The simulation provided will create 3 graphs:
   Fig. 3 using Neuron (upper left)
   Fig. 3 using xppaut (upper right)
   Fig. 2A using Neuron (black) and xppaut (red) -- xppaut is same as in journal
-The xppaut results are read into Neuron from a data file.  
+The xppaut results are read into Neuron from a data file.
 
 The correct simulation is available in the download as booth_bose.ode
-This program can be run under Bard Ermentraut's simulator xppaut 
-                http://www.math.pitt.edu/~bard/xpp/xpp.html
+This program can be run under Bard Ermentraut's simulator xppaut
+                [http://www.math.pitt.edu/~bard/xpp/xpp.html](http://www.math.pitt.edu/~bard/xpp/xpp.html)
 The booth_bose.ode provided here is slightly modified from the original obtained
 from Victoria Booth's home page; the originals include more extensive simulations:
-                http://www.math.njit.edu/~vbooth/
+                [http://www.math.njit.edu/~vbooth/](http://www.math.njit.edu/~vbooth/)
 
 I have not perfectly replicated the simulation: the morphology of the bursts are
-very close to being correct but the timing of bursts in the 1500 ms simulation is 
+very close to being correct but the timing of bursts in the 1500 ms simulation is
 off (as can be seen by zooming in on the final burst). This is due to the precise
-timing of threshold crossings (see next paragraph).   The data for the xppaut, 
+timing of threshold crossings (see next paragraph).   The data for the xppaut,
 accurate replica is provided in xpp.dat.  The columns are 't vs vd cad hs ns sd cd
 qd gkq gkc'.  The first 3 state variables from this data file are opened in Neuron
 by vectors of the same name (time is in tvec).
@@ -121,3 +119,5 @@ setting routines.
 
 20220516 Updated MOD files to contain valid C++ and be compatible with the
          upcoming versions 8.2 and 9.0 of NEURON.
+
+2025-05-27 – Standardized to Markdown.
