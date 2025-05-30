@@ -120,4 +120,4 @@ setting routines.
 20220516 Updated MOD files to contain valid C++ and be compatible with the
          upcoming versions 8.2 and 9.0 of NEURON.
 
-2025-05-27 – Standardized to Markdown.
+20250527 Standardized to Markdown.
